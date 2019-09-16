@@ -25,7 +25,30 @@ app.get('/screams', (req,res)=>
   .catch(err=> console.error(err));
 })
 
+app.post('/screams',(req,res)=>{
+  //new object
+  //method post unnecessary post method automatcically
+ //  if(req.method!=="POST"){
+ //    return res.status(400).json({error:'method not allowed'})
+ //  }
+  const newScream={
+    body:req.body.body,
+    userHandle:req.body.userHandle,
+    createdAt:admin.firestore.Timestamp.fromDate(new Date())
+  };
 
+  admin.firestore()
+  .collection('screams')
+  .add(newScream )
+  .then( (doc) => {
+    res.json({message: doc.id +' created'});
+  })
+  .catch(err=>{
+    res.status(500).json({error:'sth gone wrond'});
+    console.error(err);
+  });
+
+})
 
 let defaultAppConfig = {
     credential: admin.credential.cert({
@@ -66,29 +89,7 @@ let defaultAppConfig = {
 // 	"userHandle":"postman userHandle"
 /}
 */
- exports.createScreams=functions.https.onRequest((req,res)=>{
-   //new object
-   if(req.method!=="POST"){
-     return res.status(400).json({error:'method not allowed'})
-   }
-   const newScream={
-     body:req.body.body,
-     userHandle:req.body.userHandle,
-     createdAt:admin.firestore.Timestamp.fromDate(new Date())
-   };
 
-   admin.firestore()
-   .collection('screams')
-   .add(newScream )
-   .then( (doc) => {
-     res.json({message: doc.id +' created'});
-   })
-   .catch(err=>{
-     res.status(500).json({error:'sth gone wrond'});
-     console.error(err);
-   });
-
- })
 
 //https://baseurl.com/api/
 exports.api = functions.https.onRequest(app);
