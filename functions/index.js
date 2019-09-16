@@ -18,7 +18,14 @@ app.get('/screams', (req,res)=>
   .then(data=> {
     let screams =[];
     data.forEach(element => {
-        screams.push(element.data());
+      const data_ = doc.data();
+        screams.push({
+          screamId: doc.id,
+          body:data_.body,
+          userHandle:data_.userHandle,
+          createdAt:data_.createdAt
+
+        });
     });
     return res.json(screams);
   })
