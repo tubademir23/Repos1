@@ -8,6 +8,9 @@ const app = express();
 
 app.get('/screams', (req,res)=>
 {
+  if(req.method!=='GET'){
+    res.status(400).json({error:'yeri değil..'})
+  }
   admin
   .firestore()
   .collection("screams")
@@ -65,7 +68,7 @@ let defaultAppConfig = {
 */
  exports.createScreams=functions.https.onRequest((req,res)=>{
    //new object
-   if(req.method!="POST"){
+   if(req.method!=="POST"){
      return res.status(400).json({error:'method not allowed'})
    }
    const newScream={
