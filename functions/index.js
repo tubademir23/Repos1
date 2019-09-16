@@ -3,6 +3,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 //deneme github 
 // const request = require('request-promise');
+defaultApp = admin.initializeApp();
 
 let defaultAppConfig = {
     credential: admin.credential.cert({
@@ -42,18 +43,18 @@ let defaultAppConfig = {
     // });
     console.log('Welcome message written to database.');
   });
- exports.userCreated = functions.database.ref('/users/109257776193164148662').onWrite(event => {
-    let email = event.data.child('email').val();
+//  exports.userCreated = functions.database.ref('/users/109257776193164148662').onWrite(event => {
+//     let email = event.data.child('email').val();
   
-    return request({
-      url: 'https://someservice.com/api/some/call',
-      headers: {
-        'X-Client-ID': functions.config().someservice.id,
-        'Authorization': `Bearer ${functions.config().someservice.key}`
-      },
-      body: {email: email}
-    });
-  });
+//     return request({
+//       url: 'https://someservice.com/api/some/call',
+//       headers: {
+//         'X-Client-ID': functions.config().someservice.id,
+//         'Authorization': `Bearer ${functions.config().someservice.key}`
+//       },
+//       body: {email: email}
+//     });
+//   });
     exports.hello = functions.https.onRequest(async (req, resp) => {
        defaultApp = admin.initializeApp({
         "type": "service_account",
@@ -93,7 +94,7 @@ let defaultAppConfig = {
  exports.getScreams= functions.https.onRequest((req, res) =>{
      
   
-    defaultApp = admin.initializeApp();
+
 
     admin.firestore().collection("screams").get().then(data=> {
         let screams =[];
@@ -104,4 +105,30 @@ let defaultAppConfig = {
     }).catch(err=> console.error(err));
  })
 
+ //this method will be post, and 
+ //body sample 
+//  {
+// 	"body":"postman scream",
+// 	"userHandle":"postman userHandle"
+// }
+ exports.createScreams=functions.https.onRequest((req,res)=>{
+   //new object
+   const newScream={
+     body:req.body.body,
+     userHandle:req.body.userHandle,
+     createdAt:admin.firestore.Timestamp.fromDate(new Date())
+   };
+
+   admin.firestore()
+   .collection('screams')
+   .add(newScream )
+   .then( (doc) => {
+     res.json({message: doc.id +' created'});
+   })
+   .catch(err=>{
+     res.status(500).json({error:'sth gone wrond'});
+     console.error(err);
+   });
+
+ })
 
