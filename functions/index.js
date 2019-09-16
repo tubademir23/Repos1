@@ -113,6 +113,9 @@ let defaultAppConfig = {
 // }
  exports.createScreams=functions.https.onRequest((req,res)=>{
    //new object
+   if(req.method!="POST"){
+     return res.status(400).json({error:'method not allowed'})
+   }
    const newScream={
      body:req.body.body,
      userHandle:req.body.userHandle,
@@ -131,4 +134,6 @@ let defaultAppConfig = {
    });
 
  })
+
+
 
