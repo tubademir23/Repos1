@@ -124,9 +124,30 @@ const isEmpty = (string)=>{
 
 const isEmail = (email) => {
   const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  if (email.match(regEx)) return true;
-  else return false;
+  if(isEmpty(email)){
+    return "email must not be empty"
+  }
+  else if (!email.match(regEx)){ return "email must be regex";}
+  else return "successful";
 };
+//"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+const isPassword = (password, confirmPassword) => {
+  const regExpswrd = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  if(isEmpty(password) ){
+    return 'password must not be empty'
+  }
+  else if(isEmpty(confirmPassword) ){
+    return 'confirmPassword must not be empty'
+  }
+  else if(password !== confirmPassword){
+    return 'password and confirm password must be match'
+  }
+  else if(!password.match(regExpswrd)){
+    return 'password must be et least one uppercase, one lowercase, one number and eight characters'
+  }
+  else return 'successful';
+};
+
 //signup route
 app
 .post('/signup',(req,res)=>{
@@ -139,10 +160,20 @@ app
   };
 
   let errors={};
-  if(isEmpty(newUser.email)){
-    errors.email='email must not be empty'
-  } else if()
+  const emailMsg= isEmail(newUser.email);
+  if(emailMsg!=="successful"){
+    errors.email=emailMsg;
+  }
 
+  const pswrdMsg= isPassword(newUser.password, newUser.confirmPassword);
+  if(pswrdMsg!=="successful")
+    errors.password=pswrdMsg;
+
+  if(isEmpty(newUser.handle)) errors.handle ='must not be empty';
+
+  if(Object.keys(errors).length>0){
+    return res.status(400).json(errors);
+  }
   // TODO: validate data 
   let token, userId;
   db.doc(`/users/${newUser.handle}`)
