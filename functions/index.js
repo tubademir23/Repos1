@@ -129,7 +129,7 @@ app
   };
 
   // TODO: validate data 
-  let token, userId;
+  let token_, userId_;
   db.doc(`/users/${newUser.handle}`)
   .get()
   .then(doc=>{
@@ -145,18 +145,19 @@ app
 
   })
   .then(data =>{
-   userId= data.user.id;
+   userId_= data.user.id;
+   console.log("token:"+userId_);
     return data.user.getIdToken();
   
   })
   .then(token=>{
     //console.log(token);
-    token=token;
+    token_=token;
     const userCredentials={
       handle:newUser.handle,
       email:newUser.email,
       createdAt:new Date().toISOString(),
-      userId
+      userId:userId_
     };
     return db.doc(`/users/${newUser.handle}`)
     .set(userCredentials);
@@ -169,8 +170,11 @@ app
     console.error(err);
     if(err.code=== 'auth/email-already-in-use'){
       return res.status(400).json({email:'local message: email is already use'});
+    }else{
+      console.log(token);
+      console.log(userId);
+      return res.status(500).json({error:err.code});
     }
-    return res.status(500).json({error:err.code});
   })
 
 //   firebase
