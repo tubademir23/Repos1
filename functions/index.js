@@ -35,11 +35,13 @@ let defaultAppConfig = {
 const firebase=require('firebase');
 firebase.initializeApp(firebaseConfig);
 
+const db=admin.firestore();
+
+
 app.get('/screams', (req,res)=>
 {
   let count =1;
-  admin
-  .firestore()
+  db
   .collection("screams")
   .orderBy('createdAt','desc')
   .get()
@@ -72,7 +74,7 @@ app.post('/screams',(req,res)=>{
     createdAt:new Date().toISOString()
   };
 
-  admin.firestore()
+  db
   .collection('screams')
   .add(newScream )
   .then( (doc) => {
@@ -91,13 +93,19 @@ app.post('/screams',(req,res)=>{
 //
  
  exports.getScreams= functions.https.onRequest((req, res) =>{
-    admin.firestore().collection("screams").get().then(data=> {
+    db
+    .collection("screams")
+    .get()
+    .then(data=> {
         let screams =[];
-        data.forEach(element => {
-            screams.push(element.data());
+        data
+        .forEach(element => {
+            screams
+            .push(element.data());
         });
         return res.json(screams);
-    }).catch(err=> console.error(err));
+    })
+    .catch(err=> console.error(err));
  })
 
  /*
@@ -110,7 +118,8 @@ app.post('/screams',(req,res)=>{
 */
 
 //signup route
-app.post('/signup',(req,res)=>{
+app
+.post('/signup',(req,res)=>{
   const newUser={
     email:req.body.email,
     password:req.body.password,
@@ -120,14 +129,43 @@ app.post('/signup',(req,res)=>{
   };
 
   // TODO: validate data 
-  firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
-  .then(data=>{
-    return res.status(201).json({message: ` user ${data.user.uid} signed up successfully`});
+
+  db.doc(`/users/${newUser.handle}`).get()
+  .then(doc=>{
+    if(doc.exists){
+      return res.status(400).json({
+        handle:'this handle is already taken'
+      })
+    }else{
+      return firebase
+      .auth()
+      .createUserWithEmailAndPassword(newUser.email, newUser.password);
+    }
+
+  })
+  .then(data =>{
+    data.user.getIdToken();
+  
+  })
+  .then(token=>{
+    console.log(token);
+    return res.status(201).json({token});
   })
   .catch(err =>{
     console.error(err);
     return res.status(500).json({error:err.code});
   })
+
+//   firebase
+//   .auth()
+//   .createUserWithEmailAndPassword(newUser.email, newUser.password)
+//   .then(data=>{
+//     return res.status(201).json({message: ` user ${data.user.uid} signed up successfully`});
+//   })
+//   .catch(err =>{
+//     console.error(err);
+//     return res.status(500).json({error:err.code});
+//   })
 })
 
 //https://baseurl.com/api/
