@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-const app = require('express')();
+const app = require('express')(); 
 
 
 const firebaseConfig = {
