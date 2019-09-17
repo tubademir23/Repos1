@@ -129,7 +129,7 @@ app
   };
 
   // TODO: validate data 
-  let token_, userId_;
+  let token, userId;
   db.doc(`/users/${newUser.handle}`)
   .get()
   .then(doc=>{
@@ -145,19 +145,19 @@ app
 
   })
   .then(data =>{
-   userId_= data.user.id;
-   console.log("token:"+userId_);
+    userId= data.user.uid;
+   //console.log("token:"+userId_);
     return data.user.getIdToken();
   
   })
-  .then(token=>{
-    //console.log(token);
-    token_=token;
+  .then(idtoken=>{
+    console.log(token);
+    token=idtoken;
     const userCredentials={
       handle:newUser.handle,
       email:newUser.email,
       createdAt:new Date().toISOString(),
-      userId:userId_
+      userId
     };
     return db.doc(`/users/${newUser.handle}`)
     .set(userCredentials);
@@ -171,8 +171,7 @@ app
     if(err.code=== 'auth/email-already-in-use'){
       return res.status(400).json({email:'local message: email is already use'});
     }else{
-      console.log(token);
-      console.log(userId);
+      console.log("err:"+err);
       return res.status(500).json({error:err.code});
     }
   })
