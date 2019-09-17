@@ -244,12 +244,14 @@ app.post('/login',(req,res)=>{
   let errors={};
   if(isEmpty(user.email)) errors.email ='must not be empty';
   if(isEmpty(user.password)) errors.password ='must not be empty';
-  if(Object.keys.length >= 0) {
+
+  if(Object.keys(errors).length > 0) {
     return res.status(400).json(errors);
   }
   firebase.auth().signInWithEmailAndPassword(user.email, user.password)
   .then(data=>{
-    return data.getIdToken();
+    // data.user.getIdToken()
+    return data.user.getIdToken();
   })
   .then(token =>{
     console.log(token);
