@@ -40,7 +40,7 @@ app.post('/screams',(req,res)=>{
   const newScream={
     body:req.body.body,
     userHandle:req.body.userHandle,
-    createdAt:admin.firestore.Timestamp.fromDate(new Date())
+    createdAt:new Date().toISOString()
   };
 
   admin.firestore()
@@ -106,4 +106,4 @@ let defaultAppConfig = {
 
 
 //https://baseurl.com/api/
-exports.api = functions.https.onRequest(app);
+exports.api = functions.region('europe-west1').https.onRequest(app);
