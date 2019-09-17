@@ -5,7 +5,6 @@ admin.initializeApp();
 
 const app = require('express')(); 
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyBNdhVdXEoOxUSA7TdrnleKLY6VzrPDuu8",
   authDomain: "socialape-c5980.firebaseapp.com",
@@ -61,16 +60,51 @@ app.get('/screams', (req,res)=>
   .catch(err=> console.error(err));
 })
 
+//we will start iddleware
+//middleware for 3 parameters with next
+//here headers Authorization 's value is equal 2 token,
+//take token from sign ops.
 
-app.post('/screams',(req,res)=>{
+const FBAuth=(req, res, next) =>{
+  if(req.headers.authorization ){
+    //bearer {token}
+   // console.log("req-uth--- "+req.headers.authorization);
+    idtoken = req.headers.authorization;
+  //  console.log("idtoken: "+idtoken);
+  }else{
+    console.error('no token found')
+    return res.status(403).json({error:'unauthorized'})
+  }
+  admin.auth().verifyIdToken(idtoken)
+  .then(decodedToken=>{
+    req.user=decodedToken;
+    console.log(decodedToken);
+    return db.collection('users')
+    .where('userId','==',req.user.uid)
+    .limit(1)
+    .get();
+  })
+  .then(data=>{
+    //limit 1 so array index 0, get prop handle
+    req.user.handle=data.docs[0].data().handle;
+    return next();
+  })
+  .catch(err=>{
+    console.error("error while verifying token", err);
+    res.status(403).json({err});
+    
+  });
+}
+app.post('/screams', FBAuth, (req,res)=>{
   //new object
   //method post unnecessary post method automatcically
- //  if(req.method!=="POST"){
- //    return res.status(400).json({error:'method not allowed'})
- //  }
+  if(req.body.body.trim()===''){
+    return res.status(400).json({error:'body must not be empty'})
+  }
+
   const newScream={
     body:req.body.body,
-    userHandle:req.body.userHandle,
+    userHandle:req.user.handle, // here is important that we will take handle from the user
     createdAt:new Date().toISOString()
   };
 
@@ -235,7 +269,7 @@ app
 })
 
 //https://baseurl.com/api/
-
+//gcloud auth application-default login necessary command
 app.post('/login',(req,res)=>{
   const user={
     email:req.body.email,
