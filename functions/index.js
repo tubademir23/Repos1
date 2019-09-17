@@ -130,7 +130,8 @@ app
 
   // TODO: validate data 
 
-  db.doc(`/users/${newUser.handle}`).get()
+  db.doc(`/users/${newUser.handle}`)
+  .get()
   .then(doc=>{
     if(doc.exists){
       return res.status(400).json({
@@ -144,7 +145,8 @@ app
 
   })
   .then(data =>{
-    data.user.getIdToken();
+   // userId= data.user.id;
+    return data.user.getIdToken();
   
   })
   .then(token=>{
