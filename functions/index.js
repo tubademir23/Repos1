@@ -8,15 +8,22 @@ const app = express();
 
 app.get('/screams', (req,res)=>
 {
+  let count =1;
   admin
   .firestore()
   .collection("screams")
-  .orderBy('')
+  .orderBy('createdAt','desc')
   .get()
   .then(data=> {
     let screams =[];
-    data.forEach(element => {
-        screams.push(element.data());
+    data.forEach((doc) => {
+        screams.push({
+          sno:count++,
+          screamId:doc.id,
+          body:doc.data().body,
+          userHandle:doc.data().userHandle,
+          createdAt:doc.data().createdAt
+        });
     });
     return res.json(screams);
   })
