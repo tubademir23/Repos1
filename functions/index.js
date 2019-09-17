@@ -117,6 +117,16 @@ app.post('/screams',(req,res)=>{
 /}
 */
 
+const isEmpty = (string)=>{
+  if(string.trim()==='') return true;
+  else return false;
+}
+
+const isEmail = (email) => {
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (email.match(regEx)) return true;
+  else return false;
+};
 //signup route
 app
 .post('/signup',(req,res)=>{
@@ -127,6 +137,11 @@ app
     handle:req.body.handle
 
   };
+
+  let errors={};
+  if(isEmpty(newUser.email)){
+    errors.email='email must not be empty'
+  } else if()
 
   // TODO: validate data 
   let token, userId;
