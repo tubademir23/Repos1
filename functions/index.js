@@ -8,29 +8,21 @@ const app = express();
 
 app.get('/screams', (req,res)=>
 {
-  if(req.method!=='GET'){
-    res.status(400).json({error:'yeri değil..'})
-  }
   admin
   .firestore()
   .collection("screams")
+  .orderBy('')
   .get()
   .then(data=> {
     let screams =[];
     data.forEach(element => {
-      const data_ = doc.data();
-        screams.push({
-          screamId: doc.id,
-          body:data_.body,
-          userHandle:data_.userHandle,
-          createdAt:data_.createdAt
-
-        });
+        screams.push(element.data());
     });
     return res.json(screams);
   })
   .catch(err=> console.error(err));
 })
+
 
 app.post('/screams',(req,res)=>{
   //new object
