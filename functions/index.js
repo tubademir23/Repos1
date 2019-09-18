@@ -1,7 +1,6 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
 
-admin.initializeApp();
+
 
 const app = require('express')(); 
 
@@ -34,7 +33,7 @@ let defaultAppConfig = {
 const firebase=require('firebase');
 firebase.initializeApp(firebaseConfig);
 
-const db=admin.firestore();
+
 
 
 app.get('/screams', (req,res)=>
