@@ -27,6 +27,8 @@ module.exports = (req, res, next) =>{
     .then(data=>{
       //limit 1 so array index 0, get prop handle
       req.user.handle=data.docs[0].data().handle;
+      req.user.imageUrl=data.docs[0].data().imageUrl;
+      
       return next();
     })
     .catch(err=>{
