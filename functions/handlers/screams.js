@@ -26,43 +26,56 @@ exports.getAllScreams= (req,res)=>
 }
 
 exports.postOneScream =  (req,res)=>{
-    //new object
-    //method post unnecessary post method automatcically
-    if(req.body.body.trim()===''){
-      return res.status(400).json({error:'body must not be empty'})
-    }
-  
-    const newScream={
-      body:req.body.body,
-      userHandle:req.user.handle, // here is important that we will take handle from the user
-      createdAt:new Date().toISOString()
-    };
-  
-    db
-    .collection('screams')
-    .add(newScream )
-    .then( (doc) => {
-      res.json({message: doc.id +' created'});
-    })
-    .catch(err=>{
-      res.status(500).json({error:'sth gone wrond'});
-      console.error(err);
-    });
-  
+  //new object
+  //method post unnecessary post method automatcically
+  if(req.body.body.trim()===''){
+    return res.status(400).json({error:'body must not be empty'})
   }
 
-  // // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
- 
+  const newScream={
+    body:req.body.body,
+    userHandle:req.user.handle, // here is important that we will take handle from the user
+    createdAt:new Date().toISOString()
+  };
 
- /*
- this method will be post, and 
- //body sample 
-//  {
-// 	"body":"postman scream",
-// 	"userHandle":"postman userHandle"
-/}
-*/
+  db
+  .collection('screams')
+  .add(newScream )
+  .then( (doc) => {
+    res.json({message: doc.id +' created'});
+  })
+  .catch(err=>{
+    res.status(500).json({error:'sth gone wrond'});
+    console.error(err);
+  });
+
+}
+
+exports.getScream = (req, res)=>{
+  let screamData={};
+  db.doc(`/screams/${req.params.screamId}`).get().then(doc=>{
+    if(!doc.exists){
+      res.status(404).json({error:'screamid not found'});
+      console.error(err);
+    }
+    screamData = doc.data();
+    screamData.screamId = doc.id;
+    return db.collection('comments')
+    .where('screamID','==', req.params.screamId).get();    
+  })
+  .then(data=>{
+    screamData.comments = [];
+    data.forEach(doc=>{
+      screamData.push(doc.data())
+    });
+    return res.json(screamData);
+  })
+  .catch(err=>{
+    console.error(err);
+    res.status(500).json({error: err.code});
+  })
+}
+
 
  exports.getScreams= functions.https.onRequest((req, res) =>{
     db
