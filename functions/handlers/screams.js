@@ -61,16 +61,27 @@ exports.getScream = (req, res)=>{
     }
     screamData = doc.data();
     screamData.screamId = id_;
-  })
-  .then(()=>{
-    return db.collection('comments')
-    .where('screamId','==', id_)
-    .get();
-  })
-  .then(data=>{
+    //between then the value lose
     screamData.comments = [];
-    data.forEach(doc=>{
-      console.log("data:"+doc.data());
+  });
+let i=1;
+  const refComments= db.collection('comments').where('screamId','==', id_).get();
+  
+//const ref2comments= refComments.where('screamId','==', id_).get();
+// ref2comments.then((data)=>{
+      
+//       data.forEach(doc=>{
+//     //  console.log("data:"+doc.data());
+//     doc.data();
+//      ;// console.log("i"+ i + "..." + doc.data())
+//     });
+//     return res.json(screamData);
+//   })
+
+  refComments.then((data)=>{
+      
+      data.forEach(doc=>{
+    //  console.log("data:"+doc.data());
       screamData.comments.push(doc.data())
     });
     return res.json(screamData);
