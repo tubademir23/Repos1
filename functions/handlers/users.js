@@ -109,9 +109,9 @@ exports.signup = (req,res)=>{
       let imageUrl;
 
       busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-        console.log(fieldname);
-        console.log(filename);
-        console.log(mimetype);
+        if(mimetype !== 'image/jpeg' && mimetype !== 'image/png'){
+          return res.status(400).json({error:'wrong file type submitted'});
+        }
 
         //t.i.png, last split index is extension
         const imageExtension =  filename.split('.')[filename.split('.').length-1];
