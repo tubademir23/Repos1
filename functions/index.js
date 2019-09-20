@@ -11,6 +11,7 @@ const{signup, login, uploadImage, addUserDetails, getAuthenticatedUser} = requir
 //scream routers
 app.get('/screams', getAllScreams);
 app.post('/screams', FBAuth,postOneScream);
+//send parameter :8u7p2whHpEOcwZlCiAa4 ----
 app.get('/scream/:screamId', getScream);
 //TODO: delete scream
 //TODO: like a scream

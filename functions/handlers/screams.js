@@ -53,20 +53,23 @@ exports.postOneScream =  (req,res)=>{
 
 exports.getScream = (req, res)=>{
   let screamData={};
-  db.doc(`/screams/${req.params.screamId}`).get().then(doc=>{
+  let id_= `${req.params.screamId}`;
+  db.doc(`/screams/${id_}`).get()
+  .then(doc=>{
     if(!doc.exists){
-      res.status(404).json({error:'screamid not found'});
-      console.error(err);
+      return res.status(404).json({error:'scream not found'});
     }
     screamData = doc.data();
-    screamData.screamId = doc.id;
+    screamData.screamId = id_;
     return db.collection('comments')
-    .where('screamID','==', req.params.screamId).get();    
+    .where('screamId','==', id_)
+    .get();    
   })
   .then(data=>{
     screamData.comments = [];
     data.forEach(doc=>{
-      screamData.push(doc.data())
+      console.log("data:"+doc.data());
+      screamData.comments.push(doc.data())
     });
     return res.json(screamData);
   })
