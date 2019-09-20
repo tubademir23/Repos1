@@ -3,7 +3,7 @@
 //here headers Authorization 's value is equal 2 token,
 //take token from sign ops.
 
-const {admin}=require('./admin');
+const {admin, db}=require('./admin');
 
 module.exports = (req, res, next) =>{
     if(req.headers.authorization ){

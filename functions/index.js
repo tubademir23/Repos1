@@ -6,9 +6,7 @@ const FBAuth = require('./util/fbAuth');
 const app = require('express')(); 
 
 const{getAllScreams, postOneScream} = require('./handlers/screams');
-const{signup, login} = require('./handlers/users');
-
-
+const{signup, login, uploadImage} = require('./handlers/users');
 
 //scream routers
 app.get('/screams', getAllScreams);
@@ -18,6 +16,7 @@ app.post('/screams', FBAuth,postOneScream);
 app.post('/signup',signup);
 //gcloud auth application-default login necessary command
 app.post('/login',login);
-
+//fbauth for auth need
+app.post('/user/image',FBAuth, uploadImage);
 
 exports.api = functions.region('europe-west1').https.onRequest(app);
