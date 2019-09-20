@@ -61,9 +61,11 @@ exports.getScream = (req, res)=>{
     }
     screamData = doc.data();
     screamData.screamId = id_;
+  })
+  .then(()=>{
     return db.collection('comments')
     .where('screamId','==', id_)
-    .get();    
+    .get();
   })
   .then(data=>{
     screamData.comments = [];
@@ -78,8 +80,6 @@ exports.getScream = (req, res)=>{
     res.status(500).json({error: err.code});
   })
 }
-
-
  exports.getScreams= functions.https.onRequest((req, res) =>{
     db
     .collection("screams")
