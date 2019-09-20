@@ -13,7 +13,7 @@ const isEmpty = (string)=>{
   };
   //"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
   const isPassword = (password, confirmPassword) => {
-    const regExpswrd = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const regExpswrd = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
     if(isEmpty(password) ){
       return 'password must not be empty'
     }
