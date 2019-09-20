@@ -59,3 +59,39 @@ exports.validateLoginData = (data)=>{
         valid:Object.keys(errors).length === 0 ? true : false
     }
 }
+
+exports.reduceUserDetails = (data) =>{
+  const regExWeb = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+  let userDetails = {};
+  let errors={};
+  // userId:'2vGW6Pek1cNlKla90VVgFeluXQe2',
+  //           email:'new566@gmail.com',
+  //           handle:'new566',
+  //           createdAt:'2019-09-17T08:16:23.420Z',
+  //           imageUrl:'18469778006.jpg',
+  //           bio:'hi ia m here',
+  //           website:'https://user.com',
+  //           location:'London, UK'
+
+  if(!isEmpty(data.bio.trim())) {
+    userDetails.bio = data.bio;
+  }else errors.bio='bio empty';
+  if(!isEmpty(data.website.trim()))
+  {
+    if(data.website.trim().match(regExWeb)){
+      userDetails.website = data.website;
+    }else{
+      errors.website='website does not match';
+    } 
+  }else{
+   errors.website='website empty';
+  }
+  if(!isEmpty(data.location.trim())){ 
+    userDetails.location = data.location;
+  }
+  else{ 
+    errors.location='location empty';
+  }
+  
+  return userDetails;
+}

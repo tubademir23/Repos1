@@ -1,4 +1,16 @@
 let db={
+    users:[
+        {
+            userId:'2vGW6Pek1cNlKla90VVgFeluXQe2',
+            email:'new566@gmail.com',
+            handle:'new566',
+            createdAt:'2019-09-17T08:16:23.420Z',
+            imageUrl:'18469778006.jpg',
+            bio:'hi ia m here',
+            website:'https://user.com',
+            location:'London, UK'
+        }
+    ],
     screams:[
         {
             userHandle: 'user',
@@ -26,3 +38,27 @@ let defaultAppConfig = {
   //databaseURL: 'https://socialape-c5980.firebaseio.com/'
     databaseURL:'https://console.firebase.google.com/project/socialape-c5980/database/firestore/data~2Fscreams~2F5GKdreQIsWqMRSTMtg1y'
 }
+const userDetails = {
+    // Redux data
+    credentials: {
+        userId:'2vGW6Pek1cNlKla90VVgFeluXQe2',
+        email:'new566@gmail.com',
+        handle:'new566',
+        createdAt:'2019-09-17T08:16:23.420Z',
+        imageUrl:'18469778006.jpg',
+        bio:'postman biosu',
+        website:'https://diyanet.com',
+        location:'ankara'
+    
+    },
+    likes: [
+      {
+        userHandle: 'new566',
+        screamId: '8u7p2whHpEOcwZlCiAa4'
+      },
+      {
+        userHandle: 'new566',
+        screamId: 'fA25rqzpSgPApNbLIruf'
+      }
+    ]
+  }
