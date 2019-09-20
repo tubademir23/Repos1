@@ -64,9 +64,13 @@ exports.getScream = (req, res)=>{
     //between then the value lose
     screamData.comments = [];
   });
-let i=1;
-  const refComments= db.collection('comments').where('screamId','==', id_).get();
-  
+//complex firebase query we need index
+  const refComments= db
+    .collection('comments')
+    .orderBy('createdAt','desc')
+    .where('screamId','==', id_)
+    .get();
+
 //const ref2comments= refComments.where('screamId','==', id_).get();
 // ref2comments.then((data)=>{
       
