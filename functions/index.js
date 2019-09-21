@@ -5,8 +5,18 @@ const functions = require('firebase-functions');
 const FBAuth = require('./util/fbAuth');
 const app = require('express')(); 
 
-const{getAllScreams, postOneScream, getScream,commentOnScream,likeScream, unlikeScream} = require('./handlers/screams');
-const{signup, login, uploadImage, addUserDetails, getAuthenticatedUser} = require('./handlers/users');
+const{getAllScreams, 
+    postOneScream, 
+    getScream,
+    commentOnScream,
+    deleteScream, 
+    likeScream, 
+    unlikeScream} = require('./handlers/screams');
+const{signup, 
+    login, 
+    uploadImage, 
+    addUserDetails, 
+    getAuthenticatedUser} = require('./handlers/users');
 
 //scream routers
 app.get('/screams', getAllScreams);
@@ -14,7 +24,7 @@ app.post('/screams', FBAuth,postOneScream);
 //send parameter :8u7p2whHpEOcwZlCiAa4 ----
 app.get('/scream/:screamId', getScream);
 //TODO: delete scream
-// app.get('/scream/:screamId/like',FBAuth, deleteScream);
+app.delete('/scream/:screamId',FBAuth, deleteScream);
 //TODO: like a scream
 app.get('/scream/:screamId/like',FBAuth, likeScream);
 //TODO: unlike a scream
