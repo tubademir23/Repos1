@@ -35,13 +35,19 @@ exports.postOneScream =  (req,res)=>{
   const newScream={
     body:req.body.body,
     userHandle:req.user.handle, // here is important that we will take handle from the user
-    createdAt:new Date().toISOString()
+    userImage: req.user.imageUrl,
+    createdAt:new Date().toISOString(),
+    likeCount:0,
+    commentCount:0
   };
 
   db
   .collection('screams')
   .add(newScream )
   .then( (doc) => {
+    const resScream=newScream;
+    resScream.screamId=doc.id;
+
     res.json({message: doc.id +' created'});
   })
   .catch(err=>{
@@ -129,3 +135,33 @@ exports.commentOnScream = (req, res)=>{
     })
     .catch(err=> console.error(err));
  })
+
+ exports.likeScream= (req,res)=>
+{
+  let screamData={};
+  let id_= `${req.params.screamId}`;
+  const screamDocument=db.doc(`/screams/${id_}`);
+
+  screamDocument.get()
+  .then(doc=>{
+    if(!doc.exists){
+      return res.status(404).json({error:'scream not found'});
+    }
+    screamData = doc.data();
+    screamData.screamId = id_;
+    if(isNaN(screamData.likeCount) || screamData.likeCount ==undefined){
+       screamData.likeCount=0;
+    }
+    screamData.likeCount++;
+    return screamDocument.update({ likeCount: screamData.likeCount })
+  })
+  .then(()=>{
+    return res.json(screamData)
+  })
+  .catch(err=>{
+    console.err(err);
+    return res.status(500).json({error:err.code});
+  });
+}
+exports.unlikeScream= (req,res)=>
+{}
