@@ -233,8 +233,6 @@ exports.unlikeScream= (req,res)=>
   });
 }
 const isExistsScream =(id_)=>{
-  
-
   screamDocument.get()
   .then(doc=>{
     if(!doc.exists){
@@ -266,36 +264,35 @@ exports.deleteScream= (req,res)=>
       .collection('likes')
       .where('screamId','==', id_);
       likeDocument.get()
-      .then(doc=>{
-        if(doc!==NaN && doc!==null && doc!==undefined && doc.size >0){
-          // console.log('have likes for this scream');
-          errors='have likes for this scream';
+      .then(docl=>{
+        if(docl!==NaN && docl!==null && docl!==undefined && docl.size >0){
+         // TODO: delete like for cascade operation
+          errors='have likes for this scream, but deleted';
          
         }
         return errors;
       })
       .then((errors)=>{
-        console.log('after like:'+errors);
-        const commentDocument= db
+         const commentDocument= db
         .collection('comments')
         .where('screamId','==', id_);
         commentDocument.get()
         .then(docC=>{
           if(docC!==NaN && docC!==null && docC!==undefined && docC.size >0){
-            
+              // TODO: delete comment for cascade operation
             errors='have commentDocument for this scream';
           }
           return errors;
         })
         .then((errors)=>{
           if(errors!=='' ){
+            
             return res.status(403).json({
                 errors
               })
           }else{
             screamDocument.delete();
             return res.json({message:'screamed deleted successfully'});
-            
           }
         })
         .catch(err=>{
