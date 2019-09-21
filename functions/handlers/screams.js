@@ -142,6 +142,12 @@ exports.commentOnScream = (req, res)=>{
   let id_= `${req.params.screamId}`;
   const screamDocument=db.doc(`/screams/${id_}`);
 
+  const likeDocument= db
+  .collection('likes')
+  .where('screamId','==', id_)
+  .where('userHandle','==', req.user.handle)
+  .limit(1);
+
   screamDocument.get()
   .then(doc=>{
     if(!doc.exists){
@@ -152,14 +158,31 @@ exports.commentOnScream = (req, res)=>{
     if(isNaN(screamData.likeCount) || screamData.likeCount ==undefined){
        screamData.likeCount=0;
     }
-    screamData.likeCount++;
-    return screamDocument.update({ likeCount: screamData.likeCount })
+    
+    return likeDocument.get();
   })
-  .then(()=>{
-    return res.json(screamData)
+  .then((data)=>{
+    if(data.empty){
+      db.collection('likes')
+      .add({
+        screamId:id_,
+        userHandle:req.user.handle,
+        createdAt : new Date().toISOString()
+      })
+      .then(()=>{
+        screamData.likeCount++;
+        return screamDocument.update({ likeCount: screamData.likeCount })
+      })
+      .then(()=>{      
+        return res.json(screamData);
+      });
+    }
+    else{
+      return res.status(400).json({error:'scream already liked by this user'});
+    }
   })
-  .catch(err=>{
-    console.err(err);
+  .catch((err)=>{
+    console.error(err);
     return res.status(500).json({error:err.code});
   });
 }
