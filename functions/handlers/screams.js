@@ -293,8 +293,8 @@ exports.deleteScream= (req,res)=>
                 errors
               })
           }else{
-            return screamDocument.delete();
-            //return res.json({message:'screamed deleted successfully'});
+            screamDocument.delete();
+            return res.json({message:'screamed deleted successfully'});
             
           }
         })
