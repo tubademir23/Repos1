@@ -1,3 +1,5 @@
+const {db} = require('../util/admin');
+
 const isEmpty = (string)=>{
     if(string.trim()==='') return true;
     else return false;
@@ -50,6 +52,55 @@ exports.validateSignupData = (data)=>{
         valid:Object.keys(errors).length === 0 ? true : false
     }
 }
+
+ exports.validateDeleteScream=(id_, userHandle)=>{
+  
+    const screamDocument=db.doc(`/screams/${id_}`);
+    screamDocument.get()
+    .then(doc=>{
+    if(doc.data().userHandle!==userHandle){
+       console.log('unauthorizedscream not belong to this auth user');
+      errors.authscream ='unauthorizedscream not belong to this auth user';
+    }
+    const likeDocument= db
+      .collection('likes')
+      .where('screamId','==', id_);
+      likeDocument.get()
+      .then(doc=>{
+        if(doc!==NaN && doc!==null && doc!==undefined && doc.size >0){
+          // console.log('have likes for this scream');
+           errors.likes='have likes for this scream';
+        }
+      });
+    const commentDocument= db
+      .collection('comments')
+      .where('screamId','==', id_)
+      .get()
+      .then(doc=>{
+        if(doc!==Nan && doc!==undefined && doc.size >0){
+          // console.log('have comments for this scream');
+           errors.comments='have comments for this scream';
+        }
+      });
+      return {
+        valid : Object.keys(errors).length === 0 ? true : false,
+        errors,
+        screamDocument
+       }
+     })
+    .catch(err=>{
+      console.log("catch");
+      errors.catcherr=err;
+      return {
+        valid:false,
+        errors,
+        
+        screamDocument
+      };
+     });
+}
+
+
 exports.validateLoginData = (data)=>{
     let errors={};
     if(isEmpty(data.email)) errors.email ='must not be empty';

@@ -1,6 +1,7 @@
 const {db} = require('../util/admin');
 //
 const functions = require('firebase-functions');
+const {validateDeleteScream}= require('../util/validators');
 
 exports.getAllScreams= (req,res)=>
 {
@@ -231,26 +232,40 @@ exports.unlikeScream= (req,res)=>
     return res.status(500).json({error:err.code});
   });
 }
-exports.deleteScream= (req,res)=>
-{
-  let id_= `${req.params.screamId}`;
+const isExistsScream =(id_)=>{
   const screamDocument=db.doc(`/screams/${id_}`);
+
   screamDocument.get()
   .then(doc=>{
     if(!doc.exists){
-      return res.status(404).json({error:'scream not found'});
+      console.log(id_);
+      return false;
+    }else{
+      return true;
     }
-   
-    if(doc.data().userHandle!==req.user.handle){
-      return res.status(403).json({error:'unauthorizedscream not belong to this auth user'});
-    }
-    return screamDocument.delete();
-  })
+  });
+  return true;
+};
+exports.deleteScream= (req,res)=>
+{
+  const id_= `${req.params.screamId}`;
+  if(isExistsScream(id_)){
+  const {valid, errors, screamDocument} = validateDeleteScream(id_, req.user.handle);
+
+  if(!valid){
+    console.log('valid!');
+   // console.log(res.json(errors));
+      return res.status(403).json({
+          errors
+        });
+  }
+  screamDocument.delete()
   .then(()=>{
     return res.json({message:'screamed deleted successfully'});
   })
   .catch(err=>{
     console.error(err);
     return res.status(400).json(error=>err.code);
-  })
+  });
+  }
 }
