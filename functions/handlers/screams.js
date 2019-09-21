@@ -233,7 +233,7 @@ exports.unlikeScream= (req,res)=>
   });
 }
 const isExistsScream =(id_)=>{
-  const screamDocument=db.doc(`/screams/${id_}`);
+  
 
   screamDocument.get()
   .then(doc=>{
@@ -248,24 +248,68 @@ const isExistsScream =(id_)=>{
 };
 exports.deleteScream= (req,res)=>
 {
-  const id_= `${req.params.screamId}`;
-  if(isExistsScream(id_)){
-  const {valid, errors, screamDocument} = validateDeleteScream(id_, req.user.handle);
-
-  if(!valid){
-    console.log('valid!');
-   // console.log(res.json(errors));
-      return res.status(403).json({
-          errors
-        });
-  }
-  screamDocument.delete()
-  .then(()=>{
-    return res.json({message:'screamed deleted successfully'});
+  let errors='';
+  let id_= `${req.params.screamId}`;
+  const screamDocument=db.doc(`/screams/${id_}`);
+  screamDocument.get()
+  .then(doc=>{
+    if(!doc.exists){
+      errors='scream not found';
+      return res.status(404).json({error:'scream not found'});
+    }
+    if(doc.data().userHandle!==req.user.handle){
+      errors='unauthorizedscream not belong to this auth user';
+      return res.status(403).json({error:'unauthorizedscream not belong to this auth user'});
+    }
+    console.log('after if:'+errors);
+    const likeDocument= db
+      .collection('likes')
+      .where('screamId','==', id_);
+      likeDocument.get()
+      .then(doc=>{
+        if(doc!==NaN && doc!==null && doc!==undefined && doc.size >0){
+          // console.log('have likes for this scream');
+          errors='have likes for this scream';
+         
+        }
+        return errors;
+      })
+      .then((errors)=>{
+        console.log('after like:'+errors);
+        const commentDocument= db
+        .collection('comments')
+        .where('screamId','==', id_);
+        commentDocument.get()
+        .then(docC=>{
+          if(docC!==NaN && docC!==null && docC!==undefined && docC.size >0){
+            
+            errors='have commentDocument for this scream';
+          }
+          return errors;
+        })
+        .then((errors)=>{
+          if(errors!=='' ){
+            return res.status(403).json({
+                errors
+              })
+          }else{
+            return screamDocument.delete();
+            //return res.json({message:'screamed deleted successfully'});
+            
+          }
+        })
+        .catch(err=>{
+          console.error(err);
+          return res.status(400).json(error=>err.code);
+        })
+       
+      });
+      
+      
   })
+  
   .catch(err=>{
     console.error(err);
     return res.status(400).json(error=>err.code);
-  });
-  }
+  })
 }
