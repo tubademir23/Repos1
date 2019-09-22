@@ -253,58 +253,58 @@ exports.deleteScream= (req,res)=>
   .then(doc=>{
     if(!doc.exists){
       errors='scream not found';
-      return res.status(404).json({error:'scream not found'});
+      return res.status(404).json({errors});
     }
     if(doc.data().userHandle!==req.user.handle){
       errors='unauthorizedscream not belong to this auth user';
-      return res.status(403).json({error:'unauthorizedscream not belong to this auth user'});
+      return res.status(403).json({errors});
     }
-    console.log('after if:'+errors);
-    const likeDocument= db
-      .collection('likes')
-      .where('screamId','==', id_);
-      likeDocument.get()
-      .then(docl=>{
-        if(docl!==NaN && docl!==null && docl!==undefined && docl.size >0){
-         // TODO: delete like for cascade operation
-          errors='have likes for this scream, but deleted';
-         
-        }
-        return errors;
-      })
-      .then((errors)=>{
-         const commentDocument= db
-        .collection('comments')
-        .where('screamId','==', id_);
-        commentDocument.get()
-        .then(docC=>{
-          if(docC!==NaN && docC!==null && docC!==undefined && docC.size >0){
-              // TODO: delete comment for cascade operation
-            errors='have commentDocument for this scream';
-          }
-          return errors;
-        })
-        .then((errors)=>{
-          if(errors!=='' ){
-            
-            return res.status(403).json({
-                errors
-              })
-          }else{
-            screamDocument.delete();
-            return res.json({message:'screamed deleted successfully'});
-          }
-        })
-        .catch(err=>{
-          console.error(err);
-          return res.status(400).json(error=>err.code);
-        })
-       
-      });
-      
-      
   })
-  
+  .then(()=>{
+    console.log("err"+errors+".");
+    if(errors==='' || errors===undefined){
+      db.collection("likes").where('screamId','==', id_).get()
+      .then(data=> {       
+        data.forEach((doc) => {          
+          Promise.doc.delete();
+        })
+      })
+      /*db
+      .collection("likes")
+      .where('screamId','==', id_)
+      .get()
+      .then(data=> {       
+        data.forEach((doc) => {          
+          doc.delete();
+        });
+        return;
+        // return res.status(200).json({message:'likes deleted successfully'});
+      })
+      .catch(err=> console.error(err));
+      */
+      db
+      .collection("comments")
+      .where('screamId','==', id_)
+      .get()
+      .then(data=> {
+        data.forEach((doc) => {
+          doc.delete();
+        });
+        return res.status(200).json({message:'comments deleted successfully'});
+      })
+      .catch(err=> console.error(err));
+
+      if(errors!=='' ){
+        return res.status(403).json({
+            errors
+          })
+      }else{
+        console.log("err"+errors+"...");
+        return screamDocument.delete();
+        return res.json({message:'screamed deleted successfully'});
+      }
+    }    
+  })
   .catch(err=>{
     console.error(err);
     return res.status(400).json(error=>err.code);
