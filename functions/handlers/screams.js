@@ -6,20 +6,40 @@ const {validateDeleteScream}= require('../util/validators');
 exports.getAllScreams= (req,res)=>
 {
   let count =1;
+  let ccount=1;
   db
   .collection("screams")
   .orderBy('createdAt','desc')
   .get()
   .then(data=> {
     let screams =[];
+    
     data.forEach((doc) => {
-        screams.push({
-          sno:count++,
-          screamId:doc.id,
-          body:doc.data().body,
-          userHandle:doc.data().userHandle,
-          createdAt:doc.data().createdAt
-        });
+      let id_= doc.id;
+      let comments=[];
+      
+      screams.push({
+        sno:count++,
+        screamId:id_,
+        likeCount:doc.data().likeCount,
+        body:doc.data().body,
+        userHandle:doc.data().userHandle,
+        createdAt:doc.data().createdAt,
+        comments: db
+        .collection('comments')
+        .where('screamId','==',id_)
+        .get()
+        .then(datac=>{
+          datac.forEach((docc)=>{
+            comments.push({
+              
+              body:docc.data().body,
+              createdAt:docc.data().createdAt
+            })
+          }) ;
+          return datac.json(comments);
+        })
+      });
     });
     return res.json(screams);
   })

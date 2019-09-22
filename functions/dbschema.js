@@ -27,7 +27,17 @@ let db={
             body:'first comment',
             createdAt:'2019-09-17T08:16:23.420Z'
         }
-    ]
+    ],
+    notifications: [
+        {
+          recipient: 'new566',
+          sender: 'user566',
+          read: 'true | false',
+          screamId: '8u7p2whHpEOcwZlCiAa4',
+          type: 'like | comment',
+          createdAt: '2019-09-22T08:16:23.420Z'
+        }
+      ]
 }
 
 let defaultAppConfig = {
