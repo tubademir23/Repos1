@@ -13,11 +13,14 @@ const{getAllScreams,
     deleteScream, 
     likeScream, 
     unlikeScream} = require('./handlers/screams');
+    
 const{signup, 
     login, 
     uploadImage, 
     addUserDetails, 
-    getAuthenticatedUser} = require('./handlers/users');
+    getAuthenticatedUser,
+    getUserDetails,
+    markNotificationsRead} = require('./handlers/users');
 
 //scream routers
 app.get('/screams', getAllScreams);
@@ -32,6 +35,8 @@ app.get('/scream/:screamId/like',FBAuth, likeScream);
 app.get('/scream/:screamId/unlike',FBAuth, unlikeScream);
 //TODO: comment on scream
 app.post('/scream/:screamId/comment', FBAuth, commentOnScream);
+
+
 //user routes
 app.post('/signup',signup);
 //gcloud auth application-default login necessary command
@@ -41,6 +46,8 @@ app.post('/login',login);
 app.post('/user/image',FBAuth, uploadImage);
 app.post('/user',FBAuth, addUserDetails);
 app.get('/user',FBAuth, getAuthenticatedUser);
+app.get('/user/:handle', getUserDetails);
+app.post('/notifications', FBAuth, markNotificationsRead);
 
 exports.api = functions.region('europe-west1').https.onRequest(app);
 
