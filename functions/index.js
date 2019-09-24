@@ -48,7 +48,6 @@ exports.createNotificationOnLike = functions
   .region('europe-west1')
   .firestore.document('likes/{id}')
   .onCreate((snapshot) => {
-    //   console.log('create notifications');
     return db
       .doc(`/screams/${snapshot.data().screamId}`)
       .get()
@@ -84,6 +83,67 @@ exports.deleteNotificationOnUnlike=functions
         return ;
     })
 });
+
+exports.deleteLikesOnDeleteScreams=functions
+.region('europe-west1')
+.firestore.document('/screamss/{id}')
+.onDelete((snapshot)=>{
+    
+    // const snapshot = firestore.collection('like')
+    //                 .where('screamId','==', snapshot.data().screamId)
+    //                 .get();
+    firestore.document('/screams/{id}')
+    .onDelete((snapshot)=>{
+        
+        console.log('id');
+        return '/screams/ ';
+        // const screamDocument=db.doc(`/screams/${id_}`);
+    
+        // const likeDocument= db
+        // .collection('likes')
+        // .where('screamId','==', id_)
+        // db.document('likes')
+        // .where('screamId','==',snapshot.id)
+        // .delete()
+        // .then(()=>{
+            
+        //    return res.json({ message: 'likes deleted successfully' });
+        // })
+        // .catch(err=>{
+        //     console.error(err);
+        //     return res.status(403).json({ error: err.code });
+        // })
+    })
+})
+
+
+//#region delete
+/*exports.deleteLikesOnDeleteScreams=functions
+.region('europe-west1')
+.firestore.document('/screams/{id}')
+.onDelete((snapshot)=>{
+    
+    console.log('id'+ snapshot.id);
+
+    db.document('likes')
+    .where('screamId','==',snapshot.id)
+    .delete()
+    .then(()=>{
+        
+       return res.json({ message: 'likes deleted successfully' });
+    })
+    .catch(err=>{
+        console.error(err);
+        return res.status(403).json({ error: err.code });
+    })
+})
+*/
+//#endregion delete
+// .catch(err=>{
+//     console.error(err);
+//     return res.status(500).json({ error: err.code });
+// });
+
 exports.createNotificationOnComment=functions
 .region('europe-west1')
 .firestore.document('/comments/{id}')
