@@ -71,13 +71,13 @@ exports.signup = (req,res)=>{
     .then(()=>{
       return res.status(201).json({token});
     })
-    .catch((err) =>{
+    .catch((err) =>{   
       console.error(err);
       if(err.code=== 'auth/email-already-in-use'){
         return res.status(400).json({email:'local message: email is already use'});
       }else{
         console.log("err:"+err);
-        return res.status(500).json({error:err.code});
+        return res.status(500).json({general: 'Sth went wrong try again later'});
       }
     })
 }
