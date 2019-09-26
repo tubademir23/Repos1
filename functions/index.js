@@ -79,12 +79,8 @@ exports.deleteNotificationOnUnlike=functions
 .region('europe-west1')
 .firestore.document('/likes/{id}')
 .onDelete((snapshot)=>{
-    db.doc(`/notifications/${snapshot.id}`)
+    return db.doc(`/notifications/${snapshot.id}`)
     .delete()
-    .then(()=>{
-        
-        return;
-    })
     .catch(err=>{
         console.error(err);
         return ;
@@ -124,38 +120,11 @@ exports.deleteLikesOnDeleteScreams=functions
 })
 
 
-//#region delete
-/*exports.deleteLikesOnDeleteScreams=functions
-.region('europe-west1')
-.firestore.document('/screams/{id}')
-.onDelete((snapshot)=>{
-    
-    console.log('id'+ snapshot.id);
-
-    db.document('likes')
-    .where('screamId','==',snapshot.id)
-    .delete()
-    .then(()=>{
-        
-       return res.json({ message: 'likes deleted successfully' });
-    })
-    .catch(err=>{
-        console.error(err);
-        return res.status(403).json({ error: err.code });
-    })
-})
-*/
-//#endregion delete
-// .catch(err=>{
-//     console.error(err);
-//     return res.status(500).json({ error: err.code });
-// });
-
 exports.createNotificationOnComment=functions
 .region('europe-west1')
 .firestore.document('/comments/{id}')
 .onCreate((snapshot)=>{
-    db.doc(`/screams/${snapshot.data().screamId}`).get()
+    return db.doc(`/screams/${snapshot.data().screamId}`).get()
     .then(doc=>{
         if(doc.exists){
             return db.doc(`/notifications/${snapshot.id}`).set({
@@ -168,11 +137,28 @@ exports.createNotificationOnComment=functions
             })
         }
     })
-    .then(()=>{
-        return;
-    })
     .catch(err=>{
         console.error(err);
         return ;
     })
 });
+//change after, before
+//only change image, bot other infos
+exports.onUserImageChange =functions.region('europe-west1')
+.firestore.document('/users/{userId}')
+.onUpdate((snapshot)=>{
+    console.log(change.before.data());
+    console.log(change.after.data());
+    let batch =db.batch();
+
+    return db.collection('screams')
+    .where('userHandle', '==',change.before.data().handle)
+    .get()
+    .then((data)=>{
+        data.forEach(doc=>{
+            const screamId = db.doc(`/screams/${doc.id}`);
+            batch.update(scream,{userImage:change.after.data().imageUrl});
+        })
+        return batch.commit();
+    })
+})

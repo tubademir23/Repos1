@@ -278,13 +278,12 @@ exports.login =(req,res)=>{
     return res.json(token);
   })
   .catch(err=>{
-    if(err.code==='auth/wrong-password'){
-      return res.status(403).json({general:'wrong credentials, please control'});
-    }else {
-      return res.status(500).json({
-        error:err.code
-      });
-    }
+    console.error(err);
+    //auth/wrong-password
+    //auth/user-not-user
+    //general wrond crediantials
+    return res.status(403).json({general:'wrong credentials, please control'});
+    
   })
   
 }

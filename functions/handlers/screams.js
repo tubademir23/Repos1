@@ -25,6 +25,7 @@ exports.getAllScreams= (req,res)=>
         body:doc.data().body,
         userHandle:doc.data().userHandle,
         createdAt:doc.data().createdAt,
+        userImage:doc.data().userImage,
         comments: db
         .collection('comments')
         .where('screamId','==',id_)
@@ -113,8 +114,9 @@ exports.getScream = (req, res)=>{
 }
 //comment on a comment=
 exports.commentOnScream = (req, res)=>{
-  if(req.body.body.trim()==='') return res.status(400)
-  .json({error:'must not be empty'});
+  if(req.body.body.trim()==='') 
+    return res.status(400)
+    .json({comment:'must not be empty'});
 
   const newComment={
     body: req.body.body,
