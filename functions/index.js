@@ -149,16 +149,17 @@ exports.onUserImageChange =functions.region('europe-west1')
 .onUpdate((snapshot)=>{
     console.log(change.before.data());
     console.log(change.after.data());
-    let batch =db.batch();
-
-    return db.collection('screams')
-    .where('userHandle', '==',change.before.data().handle)
-    .get()
-    .then((data)=>{
-        data.forEach(doc=>{
-            const screamId = db.doc(`/screams/${doc.id}`);
-            batch.update(scream,{userImage:change.after.data().imageUrl});
+    if(change.before.data().imageUrl1==change.after.data().imageUrl){
+        let batch =db.batch();
+        return db.collection('screams')
+        .where('userHandle', '==',change.before.data().handle)
+        .get()
+        .then((data)=>{
+            data.forEach(doc=>{
+                const screamId = db.doc(`/screams/${doc.id}`);
+                batch.update(scream,{userImage:change.after.data().imageUrl});
+            })
+            return batch.commit();
         })
-        return batch.commit();
-    })
+    }
 })
