@@ -1,3 +1,5 @@
+//API LINK: 
+//https://firestore.googleapis.com/v1/projects/socialape-c5980/databases/(default)/documents/screams
 module.exports  = {
     apiKey: "AIzaSyBNdhVdXEoOxUSA7TdrnleKLY6VzrPDuu8",
     authDomain: "socialape-c5980.firebaseapp.com",

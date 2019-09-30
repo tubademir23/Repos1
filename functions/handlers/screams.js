@@ -17,11 +17,12 @@ exports.getAllScreams= (req,res)=>
     data.forEach((doc) => {
       let id_= doc.id;
       let comments=[];
-      
+       ccount = 1;
       screams.push({
         sno:count++,
         screamId:id_,
         likeCount:doc.data().likeCount,
+        commentCount:doc.data().commentCount,
         body:doc.data().body,
         userHandle:doc.data().userHandle,
         createdAt:doc.data().createdAt,
@@ -33,13 +34,28 @@ exports.getAllScreams= (req,res)=>
         .then(datac=>{
           datac.forEach((docc)=>{
             comments.push({
-              
+              sno:ccount++,
               body:docc.data().body,
               createdAt:docc.data().createdAt
             })
           }) ;
+          //ccount=1;
           return datac.json(comments);
-        })
+        }),
+        likes: db
+        .collection('likes')
+        .where('screamId','==',id_)
+        .get()
+        .then(datac=>{
+          datac.forEach((docc)=>{
+            likes.push({    
+              sno:ccount++,          
+              userHandle:docc.data().userHandle,
+              createdAt:docc.data().createdAt
+            })
+          }) ;
+          return datac.json(likes);
+        }),
       });
     });
     return res.json(screams);
