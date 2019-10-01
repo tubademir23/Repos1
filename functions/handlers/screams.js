@@ -5,6 +5,14 @@ const {validateDeleteScream}= require('../util/validators');
 
 exports.getAllScreams= (req,res)=>
 {
+  const EventEmitter = require('events');
+  EventEmitter.defaultMaxListeners = 30;
+
+  class MyEmitter extends EventEmitter {}
+
+  const myEmitter = new MyEmitter();
+  // increase the limit
+  myEmitter.setMaxListeners(1000);
   let count =1;
   let ccount=1;
   db
@@ -13,10 +21,11 @@ exports.getAllScreams= (req,res)=>
   .get()
   .then(data=> {
     let screams =[];
-    
+    let comments=[];
+    let likes=[];
     data.forEach((doc) => {
       let id_= doc.id;
-      let comments=[];
+      // MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 close listeners added. Use emitter.setMaxListeners() to increase limit hatası veriyor ??
        ccount = 1;
       screams.push({
         sno:count++,
@@ -26,36 +35,36 @@ exports.getAllScreams= (req,res)=>
         body:doc.data().body,
         userHandle:doc.data().userHandle,
         createdAt:doc.data().createdAt,
-        userImage:doc.data().userImage,
-        comments: db
-        .collection('comments')
-        .where('screamId','==',id_)
-        .get()
-        .then(datac=>{
-          datac.forEach((docc)=>{
-            comments.push({
-              sno:ccount++,
-              body:docc.data().body,
-              createdAt:docc.data().createdAt
-            })
-          }) ;
-          //ccount=1;
-          return datac.json(comments);
-        }),
-        likes: db
-        .collection('likes')
-        .where('screamId','==',id_)
-        .get()
-        .then(datac=>{
-          datac.forEach((docc)=>{
-            likes.push({    
-              sno:ccount++,          
-              userHandle:docc.data().userHandle,
-              createdAt:docc.data().createdAt
-            })
-          }) ;
-          return datac.json(likes);
-        }),
+        userImage:doc.data().userImage
+        //,comments: db
+        // .collection('comments')
+        // .where('screamId','==',id_)
+        // .get()
+        // .then(datac=>{
+        //   datac.forEach((docc)=>{
+        //     comments.push({
+        //       sno:ccount++,
+        //       body:docc.data().body,
+        //       createdAt:docc.data().createdAt
+        //     })
+        //   }) ;
+        //   //ccount=1;
+        //   return datac.json(comments);
+        // })
+        //  ,likes: await db
+        //  .collection('likes')
+        //  .where('screamId','==',id_)
+        //  .get()
+        //  .then(datac=>{
+        //    datac.forEach((docc)=>{
+        //      likes.push({    
+        //        sno:ccount++,          
+        //        userHandle:docc.data().userHandle,
+        //        createdAt:docc.data().createdAt
+        //      })
+        //    }) ;
+        //    return datac.json(likes);
+        //  })
       });
     });
     return res.json(screams);
