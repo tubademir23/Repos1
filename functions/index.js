@@ -6,13 +6,8 @@ const FBAuth = require('./util/fbAuth');
 const app = require('express')(); 
 const {db} = require('./util/admin');
 
-const EventEmitter = require('events');
 
-class MyEmitter extends EventEmitter {}
-
-const myEmitter = new MyEmitter();
-// increase the limit
-myEmitter.setMaxListeners(1000);
+// myEmitter.setMaxListeners(1023);
 
 const{getAllScreams, 
     postOneScream, 
